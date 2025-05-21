@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DaBrain Math Game – Scratch-Based</title>
+  <style>
+    body { font-family: sans-serif; background: #f8f8ff; margin: 0; padding: 2em; }
+    #gameArea { max-width: 600px; margin: auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 16px #ccc; padding: 2em; }
+    #scoreboard { font-size: 1.2em; margin-bottom: 1em; }
+    #question { font-size: 1.5em; margin: 1em 0; }
+    #feedback { margin: 1em 0; min-height: 2em; }
+    button { font-size: 1em; padding: 0.5em 2em; }
+    input[type="text"] { font-size: 1.2em; padding: 0.3em; }
+  </style>
+</head>
+<body>
+  <div id="gameArea">
+    <div id="scoreboard">Score: 0</div>
+    <div id="question"></div>
+    <input id="answer" type="text" placeholder="Type your answer" autocomplete="off"/>
+    <button id="submitBtn">Submit</button>
+    <div id="feedback"></div>
+    <button id="nextBtn" style="display:none;">Next Question</button>
+  </div>
+  <script>
+    // Simple math game engine (addition, can extend to other types)
+    let score = 0;
+    let currentAnswer = null;
+    let round = 1;
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateQuestion() {
+      // You can expand this for other types, e.g. subtraction, multiplication
+      const a = randomInt(1, 50);
+      const b = randomInt(1, 50);
+      currentAnswer = a + b;
+      document.getElementById("question").textContent = `Q${round}: What is ${a} + ${b}?`;
+      document.getElementById("answer").value = "";
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("submitBtn").style.display = "";
+    }
+
+    function updateScoreboard() {
+      document.getElementById("scoreboard").textContent = `Score: ${score}`;
+    }
+
+    document.getElementById("submitBtn").onclick = function() {
+      const userAnswer = parseInt(document.getElementById("answer").value, 10);
+      if (userAnswer === currentAnswer) {
+        score += 1;
+        document.getElementById("feedback").textContent = "✅ Correct!";
+      } else {
+        document.getElementById("feedback").textContent = `❌ Incorrect. The answer was ${currentAnswer}.`;
+      }
+      updateScoreboard();
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "";
+    };
+
+    document.getElementById("nextBtn").onclick = function() {
+      round += 1;
+      generateQuestion();
+    };
+
+    // Start game
+    generateQuestion();
+    updateScoreboard();
+
+    // Optional: allow "Enter" to submit
+    document.getElementById("answer").addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && document.getElementById("submitBtn").style.display !== "none") {
+        document.getElementById("submitBtn").click();
+      }
+    });
+  </script>
+</body>
+</html>
