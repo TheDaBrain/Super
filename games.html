@@ -1,0 +1,76 @@
+<!-- DaBrain Game Catalog -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DaBrain Games</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>DaBrain Game Catalog</h1>
+  <div id="cardContainer"></div>
+  <script type="module">
+    import games from "./cards-data.js";
+    import { siteMapping } from "./site-mapping.js";
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const cardContainer = document.getElementById("cardContainer");
+      function adjustHrefPath(path, page) {
+        path = path.replace(/^\.\//, "").replace(/^\//, "");
+        if (page == 2) {
+          const currentHost = window.location.hostname;
+          const secondPageLink = siteMapping[currentHost];
+          if (secondPageLink) {
+            const adjustedSecondPageLink = secondPageLink.replace(/\/$/, "");
+            const adjustedPath = "/" + path;
+            return adjustedSecondPageLink + adjustedPath;
+          } else {
+            return "#";
+          }
+        } else {
+          return "./" + path;
+        }
+      }
+      function adjustImgPath(path, page) {
+        path = path.replace(/^\.\//, "").replace(/^\//, "").replace(/^img\//, "");
+        if (page == 2) {
+          const currentHost = window.location.hostname;
+          const secondPageLink = siteMapping[currentHost];
+          if (secondPageLink) {
+            const adjustedSecondPageLink = secondPageLink.replace(/\/$/, "");
+            const adjustedPath = "/img/" + path;
+            return adjustedSecondPageLink + adjustedPath;
+          } else {
+            return "./img/" + path;
+          }
+        } else {
+          return "./img/" + path;
+        }
+      }
+      function getCardHTML(gameObject) {
+        const { href, imgSrc, name, page } = gameObject;
+        const adjustedHref = adjustHrefPath(href, page);
+        const adjustedImgSrc = adjustImgPath(imgSrc, page);
+        const card = document.createElement("a");
+        card.className = "card";
+        card.href = adjustedHref;
+        const img = document.createElement("img");
+        img.src = adjustedImgSrc;
+        img.alt = name;
+        card.appendChild(img);
+        const figcaption = document.createElement("figcaption");
+        figcaption.textContent = name;
+        card.appendChild(figcaption);
+        return card;
+      }
+      // Generate and display random recommended games
+      const randomGames = games.sort(() => 0.5 - Math.random()).slice(0, 10);
+      randomGames.forEach((game) => {
+        const card = getCardHTML(game);
+        cardContainer.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>
